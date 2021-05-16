@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+    />
+
+<body>
+    <div class="container">
+      <h2>Password Generator</h2>
+      <div class="result-container">
+        <span id="result"></span>
+        <button class="btn" id="clipboard">
+          <i class="far fa-clipboard"></i>
+        </button>
+      </div>
+      <div class="settings">
+        <div class="setting">
+          <label>Password Length</label>
+          <input type="number" id="length" min="4" max="20" value="20" />
+        </div>
+        <div class="setting">
+          <label>Include uppercase letters</label>
+          <input type="checkbox" id="uppercase" checked />
+        </div>
+        <div class="setting">
+          <label>Include lowercase letters</label>
+          <input type="checkbox" id="lowercase" checked />
+        </div>
+        <div class="setting">
+          <label>Include numbers</label>
+          <input type="checkbox" id="numbers" checked />
+        </div>
+        <div class="setting">
+          <label>Include symbols</label>
+          <input type="checkbox" id="symbols" checked />
+        </div>
+      </div>
+      <button class="btn btn-large" id="generate">Generate Password</button>
+    </div>
+    <a class="github-corner" href="https://github.com/imsharukh1994" title="Fork me on GitHub" target="_blank">
+      <svg width="80" height="80" viewbox="0 0 250 250">
+        <title>Fork me on GitHub</title>
+        <path d="M0 0h250v250" />
+        <path class="octo-arm" d="M127.4 110c-14.6-9.2-9.4-19.5-9.4-19.5 3-7 1.5-11 1.5-11-1-6.2 3-2 3-2 4 4.7 2 11 2 11-2.2 10.4 5 14.8 9 16.2" fill="currentColor" style="transform-origin:130px 110px;" />
+        <path class="octo-body" d="M113.2 114.3s3.6 1.6 4.7.6l15-13.7c3-2.4 6-3 8.2-2.7-8-11.2-14-25 3-41 4.7-4.4 10.6-6.4 16.2-6.4.6-1.6 3.6-7.3 11.8-10.7 0 0 4.5 2.7 6.8 16.5 4.3 2.7 8.3 6 12 9.8 3.3 3.5 6.7 8 8.6 12.3 14 3 16.8 8 16.8 8-3.4 8-9.4 11-11.4 11 0 5.8-2.3 11-7.5 15.5-16.4 16-30 9-40 .2 0 3-1 7-5.2 11l-13.3 11c-1 1 .5 5.3.8 5z" fill="currentColor" />
+      </svg>
+    </a>
+    <script src="script.js">
+    	'use strict';
+const resultEl = document.getElementById('result'),
+  lengthEl = document.getElementById('length'),
+  uppercaseEl = document.getElementById('uppercase'),
+  lowercaseEl = document.getElementById('lowercase'),
+  numbersEl = document.getElementById('numbers'),
+  symbolsEl = document.getElementById('symbols'),
+  generateEl = document.getElementById('generate'),
+  clipboardEl = document.getElementById('clipboard');
+
+const randomFunc = {
+  lower: getRandomLower,
+  upper: getRandomUpper,
+  number: getRandomNumber,
+  symbol: getRandomSymbol,
+};
+
+clipboardEl.addEventListener('click', () => {
+  const textarea = document.createElement('textarea'),
+    password = resultEl.innerText;
+
+  if (!password) return;
+
+  textarea.value = password;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  textarea.remove();
+  alert('Password copied to clipboard!');
+});
+
+generateEl.addEventListener('click', () => {
+  const length = +lengthEl.value,
+    hasLower = lowercaseEl.checked,
+    hasUpper = uppercaseEl.checked,
+    hasNumber = numbersEl.checked,
+    hasSymbol = symbolsEl.checked;
+
+  resultEl.innerText = generatePassword(
+    hasLower,
+    hasUpper,
+    hasNumber,
+    hasSymbol,
+    length
+  );
+});
+
+function generatePassword(lower, upper, number, symbol, length) {
+  let generatedPassword = '';
+  const typesCount = lower + upper + number + symbol,
+    typesArr = [{ lower }, { upper }, { number }, { symbol }].filter(
+      (item) => Object.values(item)[0]
+    );
+  if (typesCount === 0) {
+    return '';
+  }
+
+  for (let i = 0; i < length; i += typesCount) {
+    typesArr.forEach((type) => {
+      const funcName = Object.keys(type)[0];
+      generatedPassword += randomFunc[funcName]();
+    });
+  }
+
+  const finalPassword = generatedPassword.slice(0, length);
+
+  return finalPassword;
+}
+
+function getRandomLower() {
+  return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+}
+
+function getRandomUpper() {
+  return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+}
+
+function getRandomNumber() {
+  return String.fromCharCode(Math.floor(Math.random() * 10) + 48);
+}
+
+function getRandomSymbol() {
+  const symbols = '!@#$%*&(){}[]=<>/,.';
+  return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+    </script>
+  </body>
+</html>
